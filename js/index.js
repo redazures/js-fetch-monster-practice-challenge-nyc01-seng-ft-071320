@@ -8,8 +8,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 function get (page) {
     fetch("http://localhost:3000/monsters/?_limit=50&_page="+page)
     .then(res=>res.json())
-    .then(data=>{data.forEach(mon=>renderMon(mon))
-    })
+    .then(data=>{data.forEach(mon=>renderMon(mon))})
 }
 
 function createForm (){
@@ -41,10 +40,23 @@ function createForm (){
             age: form.age.value,
             description: form.description.value
             }
-            // console.log(mon)
-            costs 
-            form.reset()
+            
+            console.log(mon)
+            
 
+            const options = {
+                method: "POST",
+                headers: {
+                  "content-type": "application/json", // mime-types
+                  "accept": "application/json"
+                },
+                body: JSON.stringify(mon)
+              }
+
+            fetch('http://localhost:3000/monsters', options)
+            .then(response => response.json())
+            // .then(mon => renderMon(mon))
+            form.reset()
     })
 }
 
