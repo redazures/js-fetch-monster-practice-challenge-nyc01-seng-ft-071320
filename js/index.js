@@ -82,9 +82,9 @@ function makeMon(mon){
 }
 
 function btnWorks(){
-    const back = document.getElementById('back')
     let page = 1
     get(page)
+    const back = document.getElementById('back')
     back.addEventListener('click',function(e){
         if (page <1){
             page=1
