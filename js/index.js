@@ -11,6 +11,16 @@ function get (page) {
     .then(data=>{data.forEach(mon=>renderMon(mon))})
 }
 
+function getMax(){
+    fetch("http://localhost:3000/monsters/")
+    .then(res=>res.json())
+    .then(mon=>{
+        monsters = Object.keys(mon)
+        console.log(monsters.length)
+        return monsters.length
+    })
+}
+
 function createForm (){
     const form = document.createElement('form')
     form.id = "monster-form"
@@ -97,6 +107,8 @@ function btnWorks(){
     })
     const forward = document.getElementById('forward')
     forward.addEventListener('click',(e)=>{
+        // const max=getMax()
+        console.log(max)
         if (page>20){
             page=21
             console.log("There are no monsters on that page")
