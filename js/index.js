@@ -122,7 +122,5 @@ function btnWorks(){
 
 function removeMons(){
     const monCollection = document.getElementById('monster-container')
-    while (monCollection.firstChild){
-    monCollection.removeChild(monCollection.firstChild)
-    }
+    while (monCollection.firstChild){monCollection.removeChild(monCollection.firstChild)}
 }
