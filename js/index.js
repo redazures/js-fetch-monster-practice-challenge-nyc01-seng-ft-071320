@@ -1,126 +1,99 @@
 //This is code for the Wu Soul! Why is there no Tarrasque on this list of monsters
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
-    createForm()
-    btnWorks()
+    formCreate()
+    submit()
+    getMax()
+    let page=1
+    get(page)
+    pagechanger(page)
 });
 
-function get (page) {
-    fetch("http://localhost:3000/monsters/?_limit=50&_page="+page)
-    .then(res=>res.json())
-    .then(data=>{data.forEach(mon=>renderMon(mon))})
+function formCreate(){
+    const formArea = document.querySelector('#create-monster')
+    const form=document.createElement('div')
+    form.innerHTML=`<form id='monster-form'>
+    <input type='text' id='name' placeholder='Name of Monster'>
+    <input type='number' id='age' placeholder='Age of Monster'>
+    <input type='text' id='description' placeholder='Description of Monster'>
+    <input type='submit' id='submit-monster'>`
+    formArea.appendChild(form)
 }
 
-function getMax(){
-    fetch("http://localhost:3000/monsters/")
-    .then(res=>res.json())
-    .then(mon=>{
-        monsters = Object.keys(mon)
-        console.log(monsters.length)
-        return monsters.length
-    })
-}
-
-function createForm (){
-    const form = document.createElement('form')
-    form.id = "monster-form"
-    const name = document.createElement('input')
-    name.id = "name"
-    name.placeholder="Monstar Name Please"
-    const age = document.createElement('input')
-    age.id = "age"
-    age.placeholder="How old be Mon-STAR"
-    const description = document.createElement('input')
-    description.id = "description"
-    description.placeholder="The Scribe Mon Sta"
-    const submit = document.createElement('button')
-    submit.innerHTML= " Create Mon "
-    form.appendChild(name)
-    form.appendChild(age)
-    form.appendChild(description)
-    form.appendChild(submit)
-    const createMon = document.getElementById('create-monster')
-    createMon.appendChild(form)
-    form.addEventListener('submit', e=>{
-        e.preventDefault()
-        console.log("you are about to submit")
-        
-        mon={
+function submit (){
+    const form = document.querySelector('#monster-form')
+    form.addEventListener('submit',(e)=>{
+        event.preventDefault()
+        console.log("you are inside the monster form")
+        faker = {
             name: form.name.value,
             age: form.age.value,
             description: form.description.value
             }
-            
-            console.log(mon)
-            
+        //create monster goes here
+        console.log(faker)
+        fetch('http://localhost:3000/monsters', {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+                "accept": "application/json"
+            },
+            body: JSON.stringify(faker)
+            // .then(resp=>resp.json())
+        })
+        form.reset()
+    })  
+}
 
-            const options = {
-                method: "POST",
-                headers: {
-                  "content-type": "application/json", // mime-types
-                  "accept": "application/json"
-                },
-                body: JSON.stringify(mon)
-              }
-
-            fetch('http://localhost:3000/monsters', options)
-            .then(response => response.json())
-            // .then(mon => renderMon(mon))
-            form.reset()
+function getMax(){
+    fetch('http://localhost:3000/monsters')
+    .then(res=>res.json())
+    .then(results=>{
+        num = results.length
+        const title = document.querySelector('h1')
+        let content = num + " " + title.innerText 
+        title.innerText =content
     })
 }
 
-function renderMon (mon){
-    // console.log(mon)
-    faker={
-        name: mon.name,
-        age: mon.age,
-        description: mon.description,
-        id: mon.id
-    }
-    // console.log(faker)
-    makeMon(faker)
+function get(page){
+    fetch('http://localhost:3000/monsters/?_limit=50&_page='+page)
+    .then(res=>res.json())
+    .then(renders)
 }
 
-function makeMon(mon){
-    const monCollection = document.getElementById('monster-container')
-    const divMon= document.createElement('div')
-    divMon.classList.add('monster')
-    divMon.dataset.id= mon.id
-    divMon.innerHTML=   `<h2>${mon.name}</h2><h4>${mon.age}</h4><p>${mon.description}<p>`
-    monCollection.appendChild(divMon)
+function renders(mons){
+    // console.log("create monster here")
+    const container=document.querySelector('#monster-container')
+    mons.forEach(mon=>
+        { 
+            const place = document.createElement('div')
+            place.innerHTML=`<p>Name: ${mon.name}</p><p>Age ${mon.age}</p><p>Description ${mon.description}</p>`
+            container.appendChild(place)
+        })
 }
 
-function btnWorks(){
-    let page = 1
-    get(page)
-    const back = document.getElementById('back')
-    back.addEventListener('click',function(e){
-        if (page <1){
-            page=1
-            console.log("There are no monstars in that page")
-        }else{
+function pagechanger(page){
+    const max = Math.ceil(parseInt(document.querySelector('h1').innerText)/50)
+    const container=document.querySelector('#monster-container') // console.log(max)
+    document.addEventListener('click',(e)=>{//console.log(e.target)
+        if (e.target.matches('#back')){
+            console.log("back")
             page--
-            removeMons()
-            get (page)
+            if(page<0){
+                page++
+            }
+            container.innerHTML=""
+            get(page)
         }
-    })
-    const forward = document.getElementById('forward')
-    forward.addEventListener('click',(e)=>{
-        // const max=getMax()
-        console.log(max)
-        if (page>20){
-            page=21
-            console.log("There are no monsters on that page")
-        }else{
+        else if (e.target.matches('#forward')){
+            console.log("forward")
             page++
-            removeMons()
-            get (page)
+            if(page>max){
+                page--
+            }
+            container.innerHTML=""
+            get(page)
         }
-    })
-}
-
-function removeMons(){
-    const monCollection = document.getElementById('monster-container')
-    while (monCollection.firstChild){monCollection.removeChild(monCollection.firstChild)}
+    })    
 }
